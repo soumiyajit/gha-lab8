@@ -1,0 +1,53 @@
+name: Conditional Artifact Lab
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Backend Tests
+        id: test_step
+        run: |
+          mkdir -p backend/logs
+          echo "Simulating tests..."
+          echo "Simulating tests..." > backend/logs/test-results.txt
+          # UNCOMMENT the line below to simulate a FAILURE
+          # exit 1
+          
+      - name: Upload Error Logs on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-error-logs
+          path: backend/logs/
+
+      - name: Build Frontend
+        if: success()
+        run: |
+          mkdir -p frontend/dist
+          echo "<h1>Academia Synapse</h1>" > frontend/dist/index.html
+
+      - name: Upload Production Bundle
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-production-bundle
+          path: frontend/dist/
+
+      - name: Create Execution Summary
+        if: always()
+        run: echo "Academia Synapse run finished at $(date)" > summary.txt
+
+      - name: Upload Execution Summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-summary
+          path: summary.txt
