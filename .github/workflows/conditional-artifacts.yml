@@ -19,7 +19,7 @@ jobs:
           echo "Simulating tests..."
           echo "Simulating tests..." > backend/logs/test-results.txt
           # UNCOMMENT the line below to simulate a FAILURE
-          # exit 1
+          exit 1
           
       - name: Upload Error Logs on Failure
         if: failure()
